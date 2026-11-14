@@ -2,7 +2,6 @@ package com.auraplayer
 
 import android.Manifest
 import android.content.ComponentName
-import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -12,12 +11,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -26,7 +23,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -50,7 +46,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ExecutionException
 
- data class Track(val uri: Uri, val title: String, val artist: String, val album: String)
+data class Track(val uri: Uri, val title: String, val artist: String, val album: String)
 
 class MainActivity : ComponentActivity() {
     private var controllerFuture: ListenableFuture<MediaController>? = null
@@ -174,12 +170,12 @@ private fun AuraPlayerScreen(
             Spacer(Modifier.height(18.dp))
             GlassCard(Modifier.fillMaxWidth().height(238.dp)) {
                 Column(Modifier.fillMaxSize().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
-                    Text(if (thai) "กำลังเล่น" else "NOW PLAYING", color = Color.White.copy(alpha = .68f), style = MaterialTheme.typography.labelMedium)
+                    Text(if (thai) "ขณะเล่น" else "NOW PLAYING", color = Color.White.copy(alpha = .68f), style = MaterialTheme.typography.labelMedium)
                     RingProgress(progress = if (duration > 0) position.toFloat() / duration else 0f, modifier = Modifier.size(112.dp)) {
                         Icon(Icons.Default.MusicNote, null, tint = Color.White, modifier = Modifier.size(42.dp))
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(currentTitle.ifBlank { if (thai) "เลือกเสียงเพื่อเริ่ม" else "Choose audio to begin" }, color = Color.White, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(currentTitle.ifBlank { if (thai) "เลือกเสียงเพื่อฟัง" else "Choose audio to begin" }, color = Color.White, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text(currentArtist, color = Color.White.copy(alpha = .65f), style = MaterialTheme.typography.bodySmall)
                     }
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
@@ -199,7 +195,7 @@ private fun AuraPlayerScreen(
             if (tracks.isEmpty()) {
                 GlassCard(Modifier.fillMaxWidth().weight(1f)) {
                     Column(Modifier.fillMaxSize().padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                        Text(if (thai) "ยังไม่มีเสียงในคลัง" else "No audio found", color = Color.White)
+                        Text(if (thai) "คลังเสียงว่าง" else "No audio found", color = Color.White)
                         Spacer(Modifier.height(8.dp))
                         TextButton(onClick = onRequestPermission) { Text(if (thai) "อนุญาตเข้าถึงเสียง" else "Allow audio access") }
                     }
@@ -238,7 +234,7 @@ private fun AuraPlayerScreen(
 
 @Composable
 private fun GlassCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    Column(modifier.clip(RoundedCornerShape(26.dp)).background(Color.White.copy(alpha = .11f)).then(Modifier), content = content)
+    Column(modifier.clip(RoundedCornerShape(26.dp)).background(Color.White.copy(alpha = .11f)), content = content)
 }
 
 @Composable
@@ -278,12 +274,12 @@ private fun TagEditorDialog(track: Track, image: Uri?, thai: Boolean, onPickArtw
     var album by remember(track) { mutableStateOf(track.album) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (thai) "แก้ไขข้อมูลเสียง" else "Edit audio tags") },
+        title = { Text(if (thai) "แก้แท็กเสียง" else "Edit audio tags") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(title, { title = it }, label = { Text(if (thai) "ชื่อ" else "Title") }, singleLine = true)
                 OutlinedTextField(artist, { artist = it }, label = { Text(if (thai) "ศิลปิน" else "Artist") }, singleLine = true)
-                OutlinedTextField(album, { album = it }, label = { Text(if (thai) "อัลบั้ม" else "Album") }, singleLine = true)
+                OutlinedTextField(album, { album = it }, label = { Text(if (thai) "ชุดเพลง" else "Album") }, singleLine = true)
                 TextButton(onClick = onPickArtwork) { Text(if (image != null) { if (thai) "เลือกรูปแล้ว" else "Artwork selected" } else { if (thai) "เลือกรูปปก" else "Choose artwork" }) }
             }
         },
